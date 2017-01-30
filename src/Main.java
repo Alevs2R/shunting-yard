@@ -5,7 +5,7 @@ public class Main {
         //converting the given arithmetic expression to the reversed polish notation form
 
         InfixToPostifx converter = new InfixToPostifx();
-        String expression = "(5 + 8 - 3)/(1 + 1)";
+        String expression = "(2*7+4)/3";
         for(Character ch: expression.toCharArray()){
             if(!ch.equals(' '))
                 converter.passToken(ch);

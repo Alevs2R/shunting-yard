@@ -8,7 +8,6 @@
 public class InfixToPostifx {
     private LinkedQueue<Character> outputQueue = new LinkedQueue<>();
     private LinkedStack<Character> operatorsStack = new LinkedStack<>();
-    private char[] operatorsOrder = {'+', '-', '*', '/'};
 
     /**
      * main feature of algorithm, which takes tokens one by one and put elements to operators stack and output queue
@@ -26,10 +25,17 @@ public class InfixToPostifx {
             operatorsStack.pop();
         }
         else {
+            while(isOperatorLessPrecedence(tok, operatorsStack.top()))
+                outputQueue.enqueue(operatorsStack.pop());
+
             operatorsStack.push(tok);
         }
     }
 
+    private boolean isOperatorLessPrecedence(Character op1, Character op2){
+        if (op2 == null) return false;
+        return (op2 == '*' || op2 == '/') && (op1 == '+' || op1 == '-');
+    }
 
     /**
      * use this method when no more tokens to read

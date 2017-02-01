@@ -1,8 +1,7 @@
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -12,17 +11,17 @@ public class Main {
 
         InfixToPostifx converter = new InfixToPostifx();
 
-        for(Character ch: in.nextLine().toCharArray()){
-            if(!ch.equals(' ')) // skip spaces
-                converter.passToken(ch);
+        StringTokenizer tok = new StringTokenizer(in.nextLine(), "()+-/* ", true);
+        while (tok.hasMoreTokens()) {
+            converter.passToken(tok.nextToken());
         }
+
         converter.finishExpression();
-        String rpn = converter.getExpresion();
 
         // now we evaluate given RPN and save the result
 
         RPNCalculator calc = new RPNCalculator();
-        calc.setExpression(rpn);
+        calc.setExpression(converter.getRPNQueue());
 
         PrintWriter writer = new PrintWriter("output.txt");
         writer.println(String.format(Locale.US, "%.2f", calc.calculate()));

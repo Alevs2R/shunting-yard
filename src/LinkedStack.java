@@ -50,6 +50,7 @@ public class LinkedStack<E> implements Stack<E> {
         E topElement = this.top();
         first = first.next;
         count--;
+
         return topElement;
     }
 }

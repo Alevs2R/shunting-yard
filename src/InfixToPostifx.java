@@ -1,48 +1,67 @@
 /**
  * @author Alexey Evlampev
- *
- * Implementation of shunting-yard algorithm for arithmetic operators and brackets. No functions handling
- * uses both stack and queue
+ *         <p>
+ *         Implementation of shunting-yard algorithm for arithmetic operators and brackets. No functions handling
+ *         uses both stack and queue
  */
 
 public class InfixToPostifx {
-    private LinkedQueue<Character> outputQueue = new LinkedQueue<>();
-    private LinkedStack<Character> operatorsStack = new LinkedStack<>();
+    private LinkedQueue<String> outputQueue = new LinkedQueue<>();
+    private LinkedStack<String> operatorsStack = new LinkedStack<>();
 
     /**
      * main feature of algorithm, which takes tokens one by one and put elements to operators stack and output queue
+     *
      * @param tok is the next read token (number, operator or bracket)
      */
-    public void passToken(Character tok){
-        if(Character.isDigit(tok)) outputQueue.enqueue(tok);
-        else if (tok.equals('(')){
-            operatorsStack.push(tok);
-        }
-        else if (tok.equals(')')){
-            while(!operatorsStack.top().equals('(')){
-                outputQueue.enqueue(operatorsStack.pop());
-            }
-            operatorsStack.pop();
-        }
-        else {
-            while(isOperatorLessPrecedence(tok, operatorsStack.top()))
-                outputQueue.enqueue(operatorsStack.pop());
+    public void passToken(String tok) {
+        if (tok.equals(" ")) return;
 
-            operatorsStack.push(tok);
+        if (isNumber(tok))
+            outputQueue.enqueue(tok);
+        else {
+            if (tok.equals("(")) {
+                operatorsStack.push(tok);
+            } else if (tok.equals(")")) {
+                while (!operatorsStack.isEmpty() && !operatorsStack.top().equals("(")) {
+                    outputQueue.enqueue(operatorsStack.pop());
+                }
+                operatorsStack.pop();
+            } else {
+                while (isOperatorLessPrecedence(tok, operatorsStack.top()))
+                    outputQueue.enqueue(operatorsStack.pop());
+
+                operatorsStack.push(tok);
+            }
         }
     }
 
-    private boolean isOperatorLessPrecedence(Character op1, Character op2){
+    private boolean isNumber(String value) {
+        try {
+            Double.parseDouble(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isOperatorLessPrecedence(String op1, String op2) {
         if (op2 == null) return false;
-        return (op2 == '*' || op2 == '/') && (op1 == '+' || op1 == '-');
+        return getOperatorPrecedence(op1) <= getOperatorPrecedence(op2);
+
+    }
+
+    private int getOperatorPrecedence(String op) {
+        if (op.equals("(")) return 0;
+        return (op.equals("*") || op.equals("/")) ? 2 : 1;
     }
 
     /**
      * use this method when no more tokens to read
      * pops all operators onto output queue
      */
-    public void finishExpression(){
-        while(!operatorsStack.isEmpty()){
+    public void finishExpression() {
+        while (!operatorsStack.isEmpty()) {
             outputQueue.enqueue(operatorsStack.pop());
         }
     }
@@ -51,11 +70,7 @@ public class InfixToPostifx {
     /**
      * @return the expression according to the standards of reversed polish notation (RPN)
      */
-    public String getExpresion(){
-        StringBuilder str = new StringBuilder();
-        while(!outputQueue.isEmpty()){
-            str.append(outputQueue.dequeue());
-        }
-        return str.toString();
+    public Queue<String> getRPNQueue() {
+        return outputQueue;
     }
 }
